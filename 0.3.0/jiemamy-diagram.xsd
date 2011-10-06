@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema
+    targetNamespace="http://jiemamy.org/xml/ns/diagram"
+    xmlns="http://jiemamy.org/xml/ns/diagram"
+    xmlns:core="http://jiemamy.org/xml/ns/core"
+    xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    elementFormDefault="qualified"
+    version="0.3">
+
+  <xs:annotation>
+    <xs:documentation xml:lang="en">Jiemamy XML diagram model schema</xs:documentation> 
+    <xs:documentation xml:lang="ja-JP">Jiemamy XML ダイアグラムモデルスキーマ</xs:documentation> 
+  </xs:annotation>
+  
+  <xs:import
+      namespace="http://jiemamy.org/xml/ns/core"
+      schemaLocation="http://schema.jiemamy.org/xml/0.3.0/jiemamy-core.xsd"/>
+
+  <xs:element name="diagrams">
+    <xs:complexType>
+      <xs:sequence maxOccurs="unbounded">
+        <xs:element ref="diagram" minOccurs="0" maxOccurs="unbounded" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  
+  <xs:element name="diagram">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="name" minOccurs="0" />
+        <xs:element name="level" type="levelType" minOccurs="0" />
+        <xs:element name="mode" type="modeType" minOccurs="0" />
+        <xs:element name="nodes" minOccurs="0">
+          <xs:complexType>
+            <xs:sequence minOccurs="0" maxOccurs="unbounded">
+              <xs:element ref="node" maxOccurs="unbounded" />
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="connections" minOccurs="0">
+          <xs:complexType>
+            <xs:choice minOccurs="0" maxOccurs="unbounded">
+              <xs:element ref="connection" maxOccurs="unbounded" />
+            </xs:choice>
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+      <xs:attribute name="id" type="core:uuidType" use="required" />
+      <xs:attribute name="class" type="core:fqcnType" use="optional" />
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="node">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:choice minOccurs="0">
+          <xs:element ref="core"/>
+          <xs:element name="contents" type="xs:string"/>
+        </xs:choice>
+        <xs:element ref="color" minOccurs="0"/>
+        <xs:element name="boundary">
+          <xs:complexType>
+            <xs:attribute name="x" type="overMinusOneType" default="-1" />
+            <xs:attribute name="y" type="overMinusOneType" default="-1" />
+            <xs:attribute name="width" type="overMinusOneType" default="-1" />
+            <xs:attribute name="height" type="overMinusOneType" default="-1" />
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+      <xs:attribute name="id" type="core:uuidType" use="required" />
+      <xs:attribute name="class" type="core:fqcnType" use="optional" />
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="connection">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="core"/>
+        <xs:element ref="source"/>
+        <xs:element ref="target"/>
+        <xs:element ref="color" minOccurs="0" />
+        <xs:element ref="bendpoints" minOccurs="0" maxOccurs="unbounded"/>
+      </xs:sequence>
+      <xs:attribute name="id" type="core:uuidType" use="required" />
+      <xs:attribute name="class" type="core:fqcnType" use="optional" />
+    </xs:complexType>
+  </xs:element>
+  
+  
+  <xs:element name="core">
+    <xs:complexType>
+      <xs:attribute name="ref" type="core:uuidType" use="required" />
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="source">
+    <xs:complexType>
+      <xs:attribute name="ref" type="core:uuidType" use="required" />
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="target">
+    <xs:complexType>
+      <xs:attribute name="ref" type="core:uuidType" use="required" />
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="bendpoints">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="bendpoint" minOccurs="0" maxOccurs="unbounded">
+          <xs:complexType>
+            <xs:attribute name="x" type="overMinusOneType" default="-1" />
+            <xs:attribute name="y" type="overMinusOneType" default="-1" />
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="color">
+    <xs:complexType>
+      <xs:attribute name="red" type="overMinusOneType" default="-1" />
+      <xs:attribute name="green" type="overMinusOneType" default="-1" />
+      <xs:attribute name="blue" type="overMinusOneType" default="-1" />
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="name" type="xs:string">
+    <xs:annotation>
+      <xs:documentation xml:lang="en">Physical name of Jiemamy model</xs:documentation> 
+      <xs:documentation xml:lang="ja-JP">モデル名</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+
+  <!-- 単純型 -->
+  
+  <xs:simpleType name="overMinusOneType">
+    <xs:restriction base="xs:integer">
+      <xs:minInclusive value="-1" />
+    </xs:restriction>
+  </xs:simpleType>
+  
+  <xs:simpleType name="modeType">
+    <xs:restriction base="xs:token">
+      <xs:enumeration value="PHYSICAL" />
+      <xs:enumeration value="LOGICAL" />
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="levelType">
+    <xs:restriction base="xs:token">
+      <xs:enumeration value="ENTITY" />
+      <xs:enumeration value="KEY" />
+      <xs:enumeration value="ATTR" />
+      <xs:enumeration value="ATTRTYPE" />
+    </xs:restriction>
+  </xs:simpleType>
+
+</xs:schema>
